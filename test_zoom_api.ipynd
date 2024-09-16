@@ -1,0 +1,43 @@
+import requests
+from dotenv import load_dotenvgo
+import os
+
+# Replace with your Zoom API credentials
+API_KEY = "YOUR_API_KEY"
+API_SECRET = "YOUR_API_SECRET"
+
+# Replace with the desired meeting details
+meeting_topic = "Test Meeting"
+start_time = "2022-01-01T09:00:00Z"
+duration = 60
+
+# Generate the access token
+def generate_access_token():
+    url = f"https://api.zoom.us/v2/users/{API_KEY}/token"
+    headers = {"Authorization": f"Basic {API_SECRET}"}
+    response = requests.post(url, headers=headers)
+    response_json = response.json()
+    return response_json["access_token"]
+
+# Book a meeting
+def book_meeting():
+    access_token = generate_access_token()
+    url = "https://api.zoom.us/v2/users/me/meetings"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "topic": meeting_topic,
+        "type": 2,
+        "start_time": start_time,
+        "duration": duration
+    }
+    response = requests.post(url, headers=headers, json=data)
+    response_json = response.json()
+    return response_json
+
+# Test booking a meeting
+if __name__ == "__main__":
+    response = book_meeting()
+    print(response)
